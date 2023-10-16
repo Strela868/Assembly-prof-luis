@@ -1,0 +1,82 @@
+;Programa Hello world
+;Introdução ao Assembly
+;Author: Stela V. Monteiro, FEAP
+;Version: Stela Veiga Monteiro, Curso: engenharia da computação
+SYS_EXIT       equ 1
+SYS_READ       equ 3
+SYS_WRITE      equ 4
+STDIN          equ 0
+STDOUT         equ 1
+STDOPE         equ 2
+
+    section .data  ;seção de dados iniciada
+                   ;chamada (mensagem) para informar 1o número
+    msg1 db "insira um dígito", 0xa, 0xd
+    len1 equ $ -msg1
+                   ;chamada (mensagem) para informar 2o número
+                   
+    msg2 db "insira o segundo dígito", 0xa, 0xd
+    len2 equ $ -msg2    
+                   ;chamada (mensagem) para informar resultado (soma)
+    
+    msg3 db "a soma é: "
+    len3 equ $ -msg3
+    
+section .bss    ;seção de declaração de váriaveis a serem processadas
+    num1 resb STDOPE
+    num2 resb STDOPE
+    res resb STDOUT
+    
+    section .text  ;seção de execução
+     global _start
+     
+_start:            ;iniciando programação
+
+                   ;imprime a string msg1
+    mov eax, SYS_WRITE
+    mov ebx, STDOUT
+    mov ecx, msg1
+    mov edx, len1
+    int 0x80
+                   ;lê o primeiro número
+    mov eax, SYS_READ
+    mov ebx, STDIN
+    mov edx, STDOPE
+    int 0x80
+                  ;imprime a string msg2
+    mov eax, SYS_WRITE
+    mov ebx, STDIN
+    mov ecx, msg2
+    mov edx, len2
+    int 0x80
+                 ;lê o segundo número
+    mov eax, SYS_READ
+    mov ebx, STDIN
+    mov ecx, num2
+    mov edx, STDOPE
+    int 0x80
+    
+    ;move o primeiro número para o registro eax e subtrai o ASCII 0 para converter pro DEC (decimal)
+    
+    mov eax, [num1]
+    sub eax, "0"
+    
+    ;move o segundo número para o registro ebx o ASCII 0 para converter pro DEC (decimal)
+    mov ebx, [num2]
+    sub ebx, "0"
+    
+    ;soma eax e ebx
+    add eax, ebx 
+    
+    ;adiciona "0" para converter de decimal para ASCII
+    add eax, "0"
+    
+    ;armazenar a soma na localização de memória "res"
+    mov [res], eax
+    
+    ;imprime a string msg3
+    mov eax, SYS_WRITE
+    mov ebx, STDOUT
+    mov ecx, msg3
+    mov edx, res
+    int 0x80
