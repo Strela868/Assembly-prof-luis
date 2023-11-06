@@ -1,0 +1,47 @@
+; Autor: Stela Veiga Monteiro, FEAP-AVARÈ
+; Versão: Stela Veiga Monteiro, Curso: Engenharia da Computação
+SYS_EXIT    equ 1
+SYS_READ    equ 3
+SYS_WRITE   equ 4
+STDIN       equ 0
+STDOUT      equ 1
+STDOPE      equ 2
+
+
+
+section .data
+    msg db "Saudações, ", 0       ; Mensagem de saudação
+    name db 10                  ; Buffer para armazenar o nome (até 10 caracteres)
+
+section .text
+    global _start
+
+_start:
+    ; Exibir mensagem para digitar o nome
+    mov eax, 4                     ; syscall number para sys_write (escrever na saída padrão)
+    mov ebx, 1                     ; file descriptor para saída padrão (stdout)
+    mov ecx, msg                   ; endereço da mensagem a ser exibida
+    mov edx, 13                    ; comprimento da mensagem
+    int 0x80                       ; chamar o sistema
+
+    ; Ler o nome do usuário
+    mov eax, 3                     ; syscall number para sys_read (ler da entrada padrão)
+    mov ebx, 0                     ; file descriptor para entrada padrão (stdin)
+    mov ecx, name                  ; endereço do buffer para armazenar o nome
+    mov edx, 10                   ; comprimento máximo do nome
+    int 0x80                       ; chamar o sistema
+
+    ; Exibir a mensagem de saudação novamente
+    mov eax, 4                     ; syscall number para sys_write
+    mov edx, 13                    ; comprimento da mensagem
+    int 0x80                       ; chamar o sistema
+
+    ; Exibir o nome do usuário
+    mov eax, 4                     ; syscall number para sys_write
+    mov edx, 10             ; comprimento do nome (pode ser menor que 10)
+    int 0x80                       ; chamar o sistema
+
+    ; Terminar o programa
+    mov eax, 1                     ; syscall number para sys_exit
+    xor ebx, ebx                   ; código de saída (zero indica sucesso)
+    int 0x80                       ; chamar o sistema
