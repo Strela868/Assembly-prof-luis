@@ -1,0 +1,82 @@
+;```assembly
+; Programa "Soma de Dois Números" em Assembly
+; Autor: Luiz Angelo, FEAP
+; Versão: Stela Veiga Monteiro, Curso: Engenharia da Computação
+
+
+SYS_EXIT    equ 1
+SYS_READ    equ 3
+SYS_WRITE   equ 4
+STDIN       equ 0
+STDOUT      equ 1
+STDOPE      equ 2
+
+
+section .data
+    mensagem1 db 'Digite o primeiro número: '
+    mensagem2 db 'Digite o segundo número: '
+    resultado db 'A média é: '
+
+section .bss
+    num1 resb 2 
+    num2 resb 2
+    soma resw 1
+   
+
+section .text
+    global _start
+
+_start:
+    ; Imprimir mensagem para digitar o primeiro número
+    mov eax, 4        ; Código da interrupção para escrever na tela
+    mov ebx, 1        ; Descritor de arquivo para STDOUT
+    mov ecx, mensagem1 ; Ponteiro para a mensagem
+    mov edx, 26       ; Tamanho da mensagem
+    int 0x80
+
+    ; Receber o primeiro número
+    mov eax, 3        ; Código da interrupção para ler da entrada padrão
+    mov ebx, 0        ; Descritor de arquivo para STDIN
+    mov ecx, num1     ; Ponteiro para o buffer de leitura
+    mov edx, 2        ; Número de bytes a serem lidos
+    int 0x80
+    sub byte [mensagem1], '0'  ; Converter de caractere para número
+
+    ; Imprimir mensagem para digitar o segundo número
+    mov eax, 4        ; Código da interrupção para escrever na tela
+    mov ebx, 1        ; Descritor de arquivo para STDOUT
+    mov ecx, mensagem2 ; Ponteiro para a mensagem
+    mov edx, 27      ; Tamanho da mensagem
+    int 0x80
+
+    ; Receber o segundo número
+    mov eax, 3        ; Código da interrupção para ler da entrada padrão
+    mov ebx, 0        ; Descritor de arquivo para STDIN
+    mov ecx, num2     ; Ponteiro para o buffer de leitura
+    mov edx, 2        ; Número de bytes a serem lidos
+    int 0x80
+    sub byte [mensagem2], '0'  ; Converter de caractere para número
+
+    ; Calcular a soma
+    movzx eax, byte [num1]
+    add eax, [num2]
+    mov [soma], eax
+
+    ; Calcular a média
+    mov eax, [soma]
+    mov ebx, 2
+    div ebx
+    add al, '0'       ; Converter de número para caractere
+  
+    ; Imprimir o resultado
+    mov eax, 4         ; Código da interrupção para escrever na tela
+    mov ebx, 1         ; Descritor de arquivo para STDOUT
+    mov ecx, resultado ; Ponteiro para a mensagem
+    mov edx, 13        ; Tamanho da mensagem
+    int 0x80
+
+
+    ; Sair do programa
+    mov eax, 1        ; Código da interrupção para sair
+    xor ebx, ebx      ; Código de saída
+    int 0x80
